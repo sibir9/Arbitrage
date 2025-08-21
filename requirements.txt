@@ -1,3 +1,4 @@
 ccxt  
 web3  
-aiohttp
+aiohttp  
+flask

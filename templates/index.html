@@ -2,59 +2,103 @@
 <html lang="ru">  
 <head>  
   <meta charset="UTF-8" />  
-  <title>Цена COCA на MEXC</title>  
+  <title>Цена COCA на MEXC и QuickSwap</title>  
   <style>  
     body {  
       font-family: Arial, sans-serif;  
       margin: 40px;  
       text-align: center;  
+      background-color: #f0f4f8;  
     }  
-    #price {  
-      font-size: 2em;  
+    h1 {  
+      color: #264653;  
+    }  
+    .price-block {  
+      background-color: #fff;  
+      padding: 20px;  
+      margin: 20px auto;  
+      width: 300px;  
+      border-radius: 8px;  
+      box-shadow: 0 2px 8px rgba(38, 70, 83, 0.2);  
+    }  
+    .price-label {  
+      font-size: 1.2em;  
+      margin-bottom: 8px;  
       color: #2a9d8f;  
-      margin-top: 20px;  
+    }  
+    .price-value {  
+      font-size: 2em;  
+      font-weight: bold;  
+      color: #e76f51;  
+    }  
+    .error {  
+      color: #e63946;  
+      font-weight: normal;  
     }  
   </style>  
 </head>  
 <body>  
-  <h1>Актуальная цена токена COCA на MEXC</h1>  
-  <div>Цена в USDT:</div>  
-  <div id="price">Загрузка...</div>  
+  <h1>Актуальная цена токена COCA</h1>  
+  
+  <div class="price-block">  
+    <div class="price-label">MEXC (COCA/USDT):</div>  
+    <div id="price-mexc" class="price-value">Загрузка...</div>  
+  </div>  
+  
+  <div class="price-block">  
+    <div class="price-label">QuickSwap (COCA/USDT):</div>  
+    <div id="price-uniswap" class="price-value">Загрузка...</div>  
+  </div>  
   
   <script>  
-    // Асинхронная функция для получения цены с сервера  
-    async function updatePrice() {  
+    // Функция обновления цены с сервера  
+    async function updatePrices() {  
       try {  
-        // Делаем HTTP-запрос к эндпоинту /price, который возвращает JSON с ценой  
+        // Выполняем запрос на эндпоинт /price, ожидаем JSON-объект с двумя ценами  
         const response = await fetch('/price');  
   
-        // Проверяем, успешно ли выполнен запрос  
+        // Проверяем успешность ответа  
         if (!response.ok) {  
-          throw new Error(`HTTP ошибка! статус: ${response.status}`);  
+          throw new Error(`HTTP ошибка! Статус: ${response.status}`);  
         }  
   
-        // Преобразуем ответ из формата JSON в объект JavaScript  
+        // Парсим JSON из ответа сервера  
         const data = await response.json();  
   
-        // Если сервер вернул цену — отображаем ее с 6 знаками после запятой  
-        if (data.price !== undefined) {  
-          document.getElementById('price').innerText = Number(data.price).toFixed(6);  
+        // Обновляем цену MEXC, если она есть и корректна  
+        if (data.mexc !== undefined && data.mexc !== null && data.mexc !== 'Ошибка получения') {  
+          // Приводим к числу и выводим с 6 знаками после запятой  
+          document.getElementById('price-mexc').innerText = Number(data.mexc).toFixed(6);  
+          document.getElementById('price-mexc').classList.remove('error');  
         } else {  
-          // Если в ответе ошибка, показываем сообщение об ошибке  
-          document.getElementById('price').innerText = 'Ошибка при получении цены';  
+          // Отображаем сообщение об ошибке  
+          document.getElementById('price-mexc').innerText = 'Ошибка загрузки';  
+          document.getElementById('price-mexc').classList.add('error');  
+        }  
+  
+        // Обновляем цену QuickSwap/Uniswap аналогично  
+        if (data.uniswap !== undefined && data.uniswap !== null && data.uniswap !== 'Ошибка получения') {  
+          document.getElementById('price-uniswap').innerText = Number(data.uniswap).toFixed(6);  
+          document.getElementById('price-uniswap').classList.remove('error');  
+        } else {  
+          document.getElementById('price-uniswap').innerText = 'Ошибка загрузки';  
+          document.getElementById('price-uniswap').classList.add('error');  
         }  
       } catch (error) {  
-        // При возникновении любой ошибки выводим сообщение об ошибке  
-        document.getElementById('price').innerText = 'Сетевая ошибка';  
-        console.error('Ошибка при получении цены:', error);  
+        // В случае ошибки сети или парсинга выводим сообщение и логируем ошибку  
+        document.getElementById('price-mexc').innerText = 'Сетевая ошибка';  
+        document.getElementById('price-mexc').classList.add('error');  
+        document.getElementById('price-uniswap').innerText = 'Сетевая ошибка';  
+        document.getElementById('price-uniswap').classList.add('error');  
+        console.error('Ошибка при получении цен:', error);  
       }  
     }  
   
-    // Запускаем обновление цены сразу при загрузке страницы  
-    updatePrice();  
+    // Запускаем обновление сразу при загрузке страницы  
+    updatePrices();  
   
-    // Устанавливаем интервал, чтобы обновлять цену каждые 5 секунд  
-    setInterval(updatePrice, 5000);  
+    // Обновляем цены каждые 5 секунд  
+    setInterval(updatePrices, 5000);  
   </script>  
 </body>  
-</html> 
+</html>

@@ -1,11 +1,60 @@
 <!DOCTYPE html>  
-<html lang="en">  
+<html lang="ru">  
 <head>  
-    <meta charset="UTF-8" />  
-    <title>Hello World</title>  
+  <meta charset="UTF-8" />  
+  <title>Цена COCA на MEXC</title>  
+  <style>  
+    body {  
+      font-family: Arial, sans-serif;  
+      margin: 40px;  
+      text-align: center;  
+    }  
+    #price {  
+      font-size: 2em;  
+      color: #2a9d8f;  
+      margin-top: 20px;  
+    }  
+  </style>  
 </head>  
 <body>  
-    <h1>Hello World!</h1>  
-    <p>Тестовый фронтенд для проверки деплоя.</p>  
+  <h1>Актуальная цена токена COCA на MEXC</h1>  
+  <div>Цена в USDT:</div>  
+  <div id="price">Загрузка...</div>  
+  
+  <script>  
+    // Асинхронная функция для получения цены с сервера  
+    async function updatePrice() {  
+      try {  
+        // Делаем HTTP-запрос к эндпоинту /price, который возвращает JSON с ценой  
+        const response = await fetch('/price');  
+  
+        // Проверяем, успешно ли выполнен запрос  
+        if (!response.ok) {  
+          throw new Error(`HTTP ошибка! статус: ${response.status}`);  
+        }  
+  
+        // Преобразуем ответ из формата JSON в объект JavaScript  
+        const data = await response.json();  
+  
+        // Если сервер вернул цену — отображаем ее с 6 знаками после запятой  
+        if (data.price !== undefined) {  
+          document.getElementById('price').innerText = Number(data.price).toFixed(6);  
+        } else {  
+          // Если в ответе ошибка, показываем сообщение об ошибке  
+          document.getElementById('price').innerText = 'Ошибка при получении цены';  
+        }  
+      } catch (error) {  
+        // При возникновении любой ошибки выводим сообщение об ошибке  
+        document.getElementById('price').innerText = 'Сетевая ошибка';  
+        console.error('Ошибка при получении цены:', error);  
+      }  
+    }  
+  
+    // Запускаем обновление цены сразу при загрузке страницы  
+    updatePrice();  
+  
+    // Устанавливаем интервал, чтобы обновлять цену каждые 5 секунд  
+    setInterval(updatePrice, 5000);  
+  </script>  
 </body>  
-</html>  
+</html> 

@@ -5,13 +5,13 @@ from web3 import Web3
 app = Flask(__name__)    
     
 # Конфигурация    
-RPC_URL = 'https://polygon-rpc.com'  # RPC Polygon    
+RPC_URL = 'https://VCNTygon-rpc.com'  # RPC VCNTygon    
   
 # Приведение адреса Factory к checksum формату    
 FACTORY_ADDRESS = Web3.to_checksum_address('0x5757371414417b8c6caad45baef941abc7d3ab32')    
   
 # Приведение адресов токенов к checksum формату    
-TOKEN_POL = Web3.to_checksum_address('0x455e53cbb86018ac2b8092fdcd39d8444affc3f6')    
+TOKEN_VCNT = Web3.to_checksum_address('0x8a16d4bf8a0a716017e8d2262c4ac32927797a2f')    
 TOKEN_USDT = Web3.to_checksum_address('0xc2132d05d31c914a87c6611c10748aeb04b58e8f')    
     
 FACTORY_ABI = [    
@@ -69,11 +69,11 @@ web3 = Web3(Web3.HTTPProvider(RPC_URL))
     
 def get_mexc_price():    
     """    
-    Получаем цену POL/USDT с MEXC (синхронно)    
+    Получаем цену VCNT/USDT с MEXC (синхронно)    
     """    
     try:    
         exchange = ccxt.mexc()    
-        symbol = 'POL/USDT'    
+        symbol = 'VCNT/USDT'    
         ticker = exchange.fetch_ticker(symbol)    
         price = ticker['last']    
         # В синхронной версии ccxt метода close() нет — убираем вызов    
@@ -86,11 +86,11 @@ def get_mexc_price():
     
 def get_quickswap_pair():    
     """    
-    Получаем адрес пула POL/USDT на QuickSwap через Factory    
+    Получаем адрес пула VCNT/USDT на QuickSwap через Factory    
     """    
     try:    
         factory = web3.eth.contract(address=FACTORY_ADDRESS, abi=FACTORY_ABI)    
-        pair_address = factory.functions.getPair(TOKEN_POL, TOKEN_USDT).call()    
+        pair_address = factory.functions.getPair(TOKEN_VCNT, TOKEN_USDT).call()    
         if pair_address == '0x0000000000000000000000000000000000000000':    
             print('Пул не найден.')    
             return None    
@@ -102,7 +102,7 @@ def get_quickswap_pair():
     
 def get_quickswap_price():    
     """    
-    Получаем цену POL/USDT с QuickSwap на основе резервов пула    
+    Получаем цену VCNT/USDT с QuickSwap на основе резервов пула    
     """    
     try:    
         pair_address = get_quickswap_pair()    
@@ -113,11 +113,11 @@ def get_quickswap_price():
         reserve0, reserve1 = reserves[0], reserves[1]    
         token0 = pair_contract.functions.token0().call()    
         token1 = pair_contract.functions.token1().call()    
-        if token0.lower() == TOKEN_POL.lower():    
+        if token0.lower() == TOKEN_VCNT.lower():    
             if reserve0 == 0:    
                 return None    
             price = reserve1 / reserve0    
-        elif token1.lower() == TOKEN_POL.lower():    
+        elif token1.lower() == TOKEN_VCNT.lower():    
             if reserve1 == 0:    
                 return None    
             price = reserve0 / reserve1    

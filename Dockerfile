@@ -1,6 +1,11 @@
 # Используем официальный Python образ (лучше брать slim-версию для легковесности)  
 FROM python:3.11-slim  
-  
+
+# установить системные пакеты для создания виртуального окружения и сборки Python-зависимостей.
+RUN apt-get update && \  
+    apt-get install -y python3-venv build-essential libffi-dev libssl-dev && \  
+    rm -rf /var/lib/apt/lists/*
+
 # Создаем пользователя с ограниченными правами  
 RUN useradd -m appuser  
   

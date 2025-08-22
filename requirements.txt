@@ -2,3 +2,4 @@ ccxt
 web3  
 aiohttp  
 flask
+gunicorn

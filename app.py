@@ -7,8 +7,8 @@ app = Flask(__name__)
 # Конфигурация  
 RPC_URL = 'https://polygon-rpc.com'  # RPC Polygon  
 FACTORY_ADDRESS = '0x5757371414417b8c6caad45baef941abc7d3ab32'  # QuickSwap Factory  
-TOKEN_COCA = Web3.toChecksumAddress('0x7b12598e3616261df1c05ec28de0d2fb10c1f206')  
-TOKEN_USDT = Web3.toChecksumAddress('0xc2132d05d31c914a87c6611c10748aeb04b58e8f')  
+TOKEN_COCA = Web3.to_checksum_address('0x7b12598e3616261df1c05ec28de0d2fb10c1f206')  
+TOKEN_USDT = Web3.to_checksum_address('0xc2132d05d31c914a87c6611c10748aeb04b58e8f') 
   
 FACTORY_ABI = [  
     {  

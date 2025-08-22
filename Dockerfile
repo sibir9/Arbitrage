@@ -1,12 +1,24 @@
+# Используем официальный Python образ (лучше брать slim-версию для легковесности)  
 FROM python:3.11-slim  
   
+# Создаем пользователя с ограниченными правами  
+RUN useradd -m appuser  
+  
+# Рабочая директория приложения  
 WORKDIR /app  
   
-COPY requirements.txt .  
-RUN pip install --no-cache-dir -r requirements.txt  
+# Копируем файлы приложения в контейнер  
+COPY . /app  
   
-COPY . .  
+# Создаем и активируем виртуальное окружение, устанавливаем зависимости под non-root пользователем  
+RUN python -m venv /app/venv && \  
+    /bin/bash -c "source /app/venv/bin/activate && pip install --upgrade pip && pip install -r requirements.txt"  
   
-EXPOSE 5000  
+# Меняем пользователя на appuser  
+USER appuser  
   
-CMD ["python", "app.py"] 
+# Добавляем виртуальное окружение в PATH для удобства запуска  
+ENV PATH="/app/venv/bin:$PATH"  
+  
+# Команда запуска вашего Flask-приложения через Gunicorn (пример)  
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]
